@@ -27,7 +27,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 86400 * 30  # 30 dias
 CORS(app, supports_credentials=True)
 
 # Configuração do MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://app_user:app_password@localhost/controle_financeiro'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://u516685856_finance_user:Lais&2025!@auth-db1437.hstgr.io:3306/finance'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_pre_ping': True,
