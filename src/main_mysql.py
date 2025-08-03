@@ -27,7 +27,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 86400 * 30  # 30 dias
 CORS(app, supports_credentials=True)
 
 # Configuração do MySQL
-app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:bGnCyzapVsVyKrlbhhzvAhQrEQQtPzQS@mysql.railway.internal:3306/railway
+app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:bGnCyzapVsVyKrlbhhzvAhQrEQQtPzQS@mysql.railway.internal:3306/railway'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_pre_ping': True,
