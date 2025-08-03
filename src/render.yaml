@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: ""
-    startCommand: "python main_mysql.py"
+    startCommand: "gunicorn src.main_mysql:app"
     envVars:
       - key: FLASK_ENV
         value: production
