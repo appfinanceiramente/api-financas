@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: api-financas
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: "python main_mysql.py"
+    envVars:
+      - key: FLASK_ENV
+        value: production
