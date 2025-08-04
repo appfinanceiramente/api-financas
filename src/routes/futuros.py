@@ -1,10 +1,9 @@
 
 from flask import Blueprint, jsonify, request
 from datetime import date
+from src.database.database import db 
 from src.models.gasto import Gasto
 from src.models.receita import Receita
-from src.models.auth import Usuario
-from src.models.database import db
 
 futuros_bp = Blueprint('futuros', __name__)
 
