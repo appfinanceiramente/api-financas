@@ -1,55 +1,54 @@
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from datetime import date, timedelta, datetime
-from database import get_db
-from models.gasto import Gasto
-from models.receita import Receita
-from models.user import get_current_user
+from flask import Blueprint, jsonify, request
+from datetime import date
+from src.models.gasto import Gasto
+from src.models.receita import Receita
+from src.models.auth import Usuario
+from src.models.database import db
 
-router = APIRouter()
+futuros_bp = Blueprint('futuros', __name__)
 
-@router.get("/gastos-futuros")
-def listar_gastos_futuros(db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
+@futuros_bp.route('/gastos-futuros', methods=['GET'])
+def listar_gastos_futuros():
+    user_id = request.args.get('user_id', type=int)
+    if not user_id:
+        return jsonify({"erro": "ID do usuário é obrigatório"}), 400
+
     hoje = date.today()
-    tres_meses = hoje.replace(month=hoje.month + 3) if hoje.month <= 9 else hoje.replace(year=hoje.year + 1, month=(hoje.month + 3) % 12)
+    resultados = []
 
-    # Buscar gastos futuros (parcelados ou com data futura)
-    gastos = db.query(Gasto).filter(
+    # Gastos futuros
+    gastos = Gasto.query.filter(
         Gasto.user_id == user_id,
         Gasto.data_pagamento > hoje
     ).all()
-
-    # Buscar receitas recorrentes
-    receitas = db.query(Receita).filter(
-        Receita.user_id == user_id,
-        Receita.recorrente == True
-    ).all()
-
-    resultados = []
 
     for gasto in gastos:
         resultados.append({
             "descricao": gasto.descricao,
             "valor": gasto.valor,
-            "data": gasto.data_pagamento,
-            "categoria": gasto.categoria
+            "data": gasto.data_pagamento.strftime('%Y-%m-%d'),
+            "categoria": gasto.categoria,
+            "tipo": "gasto"
         })
 
+    # Receitas recorrentes
+    receitas = Receita.query.filter(
+        Receita.user_id == user_id,
+        Receita.recorrente == True
+    ).all()
+
     for receita in receitas:
-        # Adiciona receitas recorrentes nos próximos 3 meses
-        for i in range(1, 4):
-            data_proj = hoje.replace(day=receita.data_recebimento.day)
-            mes = (hoje.month + i)
-            ano = hoje.year + (mes - 1) // 12
-            mes = (mes - 1) % 12 + 1
-            data_final = date(ano, mes, min(data_proj.day, 28))
+        for i in range(1, 4):  # Projeção de 3 meses
+            mes = (hoje.month + i - 1) % 12 + 1
+            ano = hoje.year + ((hoje.month + i - 1) // 12)
+            data_proj = date(ano, mes, min(receita.data_recebimento.day, 28))
             resultados.append({
                 "descricao": receita.descricao,
                 "valor": receita.valor,
-                "data": data_final,
+                "data": data_proj.strftime('%Y-%m-%d'),
                 "categoria": receita.categoria,
                 "tipo": "receita"
             })
 
-    return resultados
+    return jsonify(resultados)
