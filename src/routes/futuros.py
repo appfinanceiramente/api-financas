@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from datetime import date
-from models.gasto import db, Gasto
-from models.receita import Receita
+from src.models.gasto import db, Gasto
+from src.models.receita import Receita
 
 futuros_bp = Blueprint('futuros', __name__)
 
@@ -29,17 +29,18 @@ def listar_gastos_futuros():
             "tipo": "gasto"
         })
 
-    # Receitas recorrentes
+    # Receitas recorrentes (projeção de 3 meses à frente)
     receitas = Receita.query.filter(
         Receita.user_id == user_id,
         Receita.recorrente == True
     ).all()
 
     for receita in receitas:
-        for i in range(1, 4):  # Projeção de 3 meses
+        for i in range(1, 4):
             mes = (hoje.month + i - 1) % 12 + 1
             ano = hoje.year + ((hoje.month + i - 1) // 12)
-            data_proj = date(ano, mes, min(receita.data_recebimento.day, 28))
+            dia = min(receita.data_recebimento.day, 28)
+            data_proj = date(ano, mes, dia)
             resultados.append({
                 "descricao": receita.descricao,
                 "valor": receita.valor,
