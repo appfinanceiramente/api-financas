@@ -14,6 +14,7 @@ from src.routes.gastos import gastos_bp
 from src.routes.auth import auth_bp
 from src.routes.admin import admin_bp
 from src.routes.receitas import receitas_bp
+from src.routes.futuros import futuros_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
@@ -56,6 +57,7 @@ app.register_blueprint(gastos_bp, url_prefix='/api')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(admin_bp, url_prefix='/api/admin')
 app.register_blueprint(receitas_bp, url_prefix='/api')
+app.register_blueprint(futuros_bp)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
